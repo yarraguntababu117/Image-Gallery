@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Image Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gallery-item {
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+        
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        .lightbox-close, .lightbox-nav {
+            position: absolute;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .lightbox-close:hover, .lightbox-nav:hover {
+            transform: scale(1.2);
+        }
+        
+        .lightbox-close {
+            top: -40px;
+            right: 0;
+        }
+        
+        .lightbox-prev {
+            left: -40px;
+        }
+        
+        .lightbox-next {
+            right: -40px;
+        }
+        
+        .filter-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        @media (max-width: 640px) {
+            .lightbox-prev {
+                left: 10px;
+                bottom: -40px;
+                top: auto;
+            }
+            
+            .lightbox-next {
+                right: 10px;
+                bottom: -40px;
+                top: auto;
+            }
+            
+            .lightbox-close {
+                top: 10px;
+                right: 10px;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-800">Pixel Perfect Gallery</h1>
+        <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Explore stunning images from various categories with our interactive gallery</p>
+        
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap justify-center gap-3 mb-8">
+            <button class="filter-btn px-4 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all active" data-filter="all">All</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all" data-filter="nature">Nature</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all" data-filter="architecture">Architecture</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all" data-filter="food">Food</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all" data-filter="travel">Travel</button>
+        </div>
+        
+        <!-- Gallery Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Nature Images -->
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white nature" data-category="nature">
+                <img src="https://picsum.photos/600/400?random=1&nature" alt="Nature" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="1">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Mountain View</h3>
+                    <p class="text-gray-600 text-sm">Nature</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white nature" data-category="nature">
+                <img src="https://picsum.photos/600/400?random=2&forest" alt="Forest" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="2">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Enchanted Forest</h3>
+                    <p class="text-gray-600 text-sm">Nature</p>
+                </div>
+            </div>
+            
+            <!-- Architecture Images -->
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white architecture" data-category="architecture">
+                <img src="https://picsum.photos/600/400?random=3&building" alt="Building" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="3">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Modern Architecture</h3>
+                    <p class="text-gray-600 text-sm">Architecture</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white architecture" data-category="architecture">
+                <img src="https://picsum.photos/600/400?random=4&skyscraper" alt="Skyscraper" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="4">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">City Skyline</h3>
+                    <p class="text-gray-600 text-sm">Architecture</p>
+                </div>
+            </div>
+            
+            <!-- Food Images -->
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white food" data-category="food">
+                <img src="https://picsum.photos/600/400?random=5&pasta" alt="Pasta" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="5">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Italian Pasta</h3>
+                    <p class="text-gray-600 text-sm">Food</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white food" data-category="food">
+                <img src="https://picsum.photos/600/400?random=6&dessert" alt="Dessert" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="6">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Chocolate Delight</h3>
+                    <p class="text-gray-600 text-sm">Food</p>
+                </div>
+            </div>
+            
+            <!-- Travel Images -->
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white travel" data-category="travel">
+                <img src="https://picsum.photos/600/400?random=7&beach" alt="Beach" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="7">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Tropical Beach</h3>
+                    <p class="text-gray-600 text-sm">Travel</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item relative rounded-lg overflow-hidden shadow-md bg-white travel" data-category="travel">
+                <img src="https://picsum.photos/600/400?random=8&mountain" alt="Mountain" class="w-full h-64 object-cover">
+                <div class="overlay">
+                    <button class="view-btn bg-white text-blue-600 px-4 py-2 rounded-full font-medium" data-id="8">
+                        <i class="fas fa-search mr-2"></i> View
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800">Alpine Adventure</h3>
+                    <p class="text-gray-600 text-sm">Travel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lightbox -->
+    <div class="lightbox">
+        <div class="lightbox-content">
+            <img src="" alt="" class="lightbox-img fade-in">
+            <button class="lightbox-close"><i class="fas fa-times"></i></button>
+            <button class="lightbox-nav lightbox-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="lightbox-nav lightbox-next"><i class="fas fa-chevron-right"></i></button>
+            <div class="text-white text-center mt-4 lightbox-caption"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    const filter = button.dataset.filter;
+                    
+                    // Filter items
+                    galleryItems.forEach(item => {
+                        if (filter === 'all' || item.dataset.category === filter) {
+                            item.style.display = 'block';
+                            item.classList.add('fade-in');
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Lightbox functionality
+            const lightbox = document.querySelector('.lightbox');
+            const lightboxImg = document.querySelector('.lightbox-img');
+            const lightboxCaption = document.querySelector('.lightbox-caption');
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const closeButton = document.querySelector('.lightbox-close');
+            const prevButton = document.querySelector('.lightbox-prev');
+            const nextButton = document.querySelector('.lightbox-next');
+            
+            let currentIndex = 0;
+            const images = Array.from(document.querySelectorAll('.gallery-item img'));
+            const captions = Array.from(document.querySelectorAll('.gallery-item h3'));
+            
+            // Open lightbox
+            viewButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    currentIndex = parseInt(button.dataset.id) - 1;
+                    updateLightbox();
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            // Close lightbox
+            closeButton.addEventListener('click', () => {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Click outside to close
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Navigation
+            prevButton.addEventListener('click', showPrevImage);
+            nextButton.addEventListener('click', showNextImage);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevImage();
+                } else if (e.key === 'ArrowRight') {
+                    showNextImage();
+                }
+            });
+            
+            function updateLightbox() {
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                let filteredImages = images;
+                let filteredCaptions = captions;
+                
+                if (activeFilter !== 'all') {
+                    filteredImages = Array.from(document.querySelectorAll(`.gallery-item[data-category="${activeFilter}"] img`));
+                    filteredCaptions = Array.from(document.querySelectorAll(`.gallery-item[data-category="${activeFilter}"] h3`));
+                }
+                
+                // Ensure currentIndex stays within bounds
+                if (currentIndex >= filteredImages.length) {
+                    currentIndex = 0;
+                } else if (currentIndex < 0) {
+                    currentIndex = filteredImages.length - 1;
+                }
+                
+                lightboxImg.src = filteredImages[currentIndex].src;
+                lightboxCaption.textContent = filteredCaptions[currentIndex].textContent;
+                
+                // Add fade-in effect
+                lightboxImg.classList.add('fade-in');
+                setTimeout(() => {
+                    lightboxImg.classList.remove('fade-in');
+                }, 500);
+            }
+            
+            function showNextImage() {
+                currentIndex++;
+                updateLightbox();
+            }
+            
+            function showPrevImage() {
+                currentIndex--;
+                updateLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

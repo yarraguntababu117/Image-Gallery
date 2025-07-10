@@ -2,7 +2,7 @@
 
 A modern, responsive image gallery with category filtering and lightbox functionality.
 
-![Gallery Screenshot](https://i.imgur.com/JkYl7Xp.png)
+![Gallery Screenshot](https://yarraguntababu117.github.io/Image-Gallery/)
 
 ## Features
 
